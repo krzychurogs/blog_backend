@@ -1,0 +1,56 @@
+{% extends "entries/base.html"%}
+{% load i18n %}
+{% load crispy_forms_tags%}
+
+
+{%block content %}
+
+<div class="col-md-8">
+        <a href="{% url 'blog-home'   %}" class="btn btn-primary btn-sm">Wróc &rarr;</a>
+        <!-- Blog Post -->
+        <div class="card mb-4 mt-4">
+
+          <div class="card-body">
+            {%for post in posty %}
+
+             <h3 class="card-title">{{post.entry_title}}</h3>
+
+           <p>{{post.entry_text}}</p></p>
+            <img  src="{{ post.image.url }}"  class="eng-Img " height="300" width="100%" alt=""> 
+          </div>
+             
+          <div class="card-footer text-muted" >
+            {% language 'pl' %}
+            {{post.entry_date}}
+            {% endlanguage %}
+
+            <span class= "text-info mr-2">{{post.entry_author}}</span>
+    {% if request.user.is_authenticated %}        
+            <form action="{% url 'like_post' %}" method="post" >
+            {% csrf_token%}
+     
+            {% if is_liked %}
+            <button type="submit" name="post_id" value="{{post.pk}}" class="btn btn-primary">Odlajkuj</button>
+            <button type="text-info" class="btn btn-info" ">{{wszystkielajki}} Like</button>
+            {% else%}
+
+            <button type="submit" name="post_id" value="{{post.pk}}" class="btn btn-primary">Zalajkuj</button>
+          
+            <button type="text-info" class="btn btn-info" >{{wszystkielajki}} Like</button>
+            {% endif%}
+    {% else %}
+                   <button type="text-info" class="btn btn-info" >{{wszystkielajki}} Like</button>
+
+    {% endif %}            
+          </form>
+            {% endfor %}
+
+          </div>
+          
+        </div>
+        
+        <!-- Pagination -->
+        
+
+      </div>
+ {% endblock %}      

@@ -1,0 +1,33 @@
+{% extends "entries/base.html"%}
+{%block foot %}
+<footer class="py-5 bg-dark" style="position:absolute; width:100%;bottom: 0;">
+    <div class="container">
+      <p class="m-0 text-center text-white">Copyright &copy; Your Website 2019</p>
+    </div>
+    <!-- /.container -->
+  </footer>
+{%endblock %}
+
+{%block content %}
+<div class="col-md-8">
+       
+        <!-- Blog Post -->
+        <div class="card mb-4 mt-4">
+          
+          <div class="card-body ">
+           
+			<div class="col-md-8 mt-4 ">
+       
+        <h3>Udało sie wylogowac.<a href="{% url 'login'%}">Zaloguj sie ponownie </a></h3>
+
+			</div>
+              
+          </div>
+        </div>
+        
+        <!-- Pagination -->
+        
+
+      </div>
+
+ {% endblock %}      

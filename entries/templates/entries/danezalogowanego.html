@@ -1,0 +1,97 @@
+{% extends "entries/base.html"%}
+{%block menu %}
+
+<a class="nav-link" href="{%url 'create_entry'%}">Stworz post</a>
+
+{% endblock %}  
+
+{%block menu2 %}
+<a class="nav-link" href="{%url 'logout'%}">Wyloguj sie</a>
+{% endblock %}  
+
+{%block menu1 %}
+
+<a class="nav-link" href="{%url 'dane-zalogowanego'  %}">Twoje posty</a>
+{% endblock %}  
+
+{%block menu4 %}
+
+<a class="navbar-brand" href="{%url 'login-home'%}">My Blog</a>
+
+{% endblock %}  
+
+
+
+
+{%block foot %}
+<footer class="py-5 bg-dark" style="position:absolute; width:100%;bottom: 0;">
+    <div class="container">
+      <p class="m-0 text-center text-white">Copyright &copy; Your Website 2019</p>
+    </div>
+    <!-- /.container -->
+  </footer>
+{%endblock %}
+
+{%block content %}
+
+<div class="col-md-8">
+       
+        <!-- Blog Post -->
+{% if request.user.is_authenticated %}
+        
+    
+
+<table class="table">
+  <thead class="thead-light">
+    <tr>
+     
+      <th scope="col">Tytuł</th>
+      <th scope="col">Usun</th>
+      <th scope="col">Update</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for post in posty %}  
+  	
+    <tr>
+      
+     
+ 
+      <td>{{post.entry_title}}</td>
+    
+      <td> <a href="{% url 'delete_entry' post.pk     %}" class="btn btn-primary btn-danger">Usun &rarr;</a></td>
+      <td><a href="{% url 'update_entry' post.pk     %}" class="btn btn-primary btn-sm">Update &rarr;</a></td>
+      <p>{{wszystkielajki}}</p>
+    </tr>
+
+    <tr>
+     
+    
+  {% endfor %}  
+  </tbody>
+</table>
+        
+        <!-- Pagination -->
+{% endif %}       
+
+      </div>
+       <div class="col-md-4">
+
+                <!-- Side Widget -->
+      <div class="card my-4">
+          <h5 class="card-header text-center">Logged in Information</h5>
+          <div class="card-body">
+            <ul class="list-unstyled mb-0">
+                <li>
+                    <p> <strong>Username:</strong> {{ user.username}}</p>
+                </li>
+                <li>
+                    <p> <strong>Email:</strong> {{ user.email}}</p>
+                </li>
+            </ul>    
+          </div>
+        </div>
+
+
+      </div>
+ {% endblock %}      

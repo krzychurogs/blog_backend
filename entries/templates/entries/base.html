@@ -1,0 +1,114 @@
+{%load static %}  
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Blog</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="{% static 'entries/vendor/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{% static 'entries/style.css' %}">
+
+  <!-- Custom styles for this template -->
+  <link href="{% static 'entries/css/blog-home.css'%}" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      {%block menu4 %}
+      <a class="navbar-brand" href="{%url 'blog-home'%}">My Blog</a>
+      {%endblock%}
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          
+          <li class="nav-item">
+          
+           <a class="nav-link" href="{%url 'blogiuzytkownikow'  %}">Blogi użytkowników</a>
+          
+          </li>
+          <li class="nav-item">
+           {%block menu %}
+           
+           {% endblock %}
+          </li>
+          <li class="nav-item">
+            {%block menu1 %}
+               
+              {% if request.user.is_authenticated %}
+                  <a class="nav-link" href="{%url 'login-home'%}">{{user.username}}</a>
+              {% else %}
+                  <a class="nav-link" href="{%url 'login'%}">Zaloguj sie</a>  
+              
+              {% endif %}
+             
+
+            {% endblock %}
+          </li>
+
+          <li class="nav-item">
+               {%block menu5 %}
+               {% endblock %}
+          </li>
+          <li class="nav-item">
+               {%block menu3 %}
+               {% endblock %}
+          </li>
+          <li class="nav-item">
+             {%block menu2 %}
+             {% endblock %}
+          </li>
+        </ul>
+        
+      </div>
+    </div>
+
+  </nav>
+
+  <!-- Page Content -->
+  <div class="container">
+
+    <div class="row">
+
+      <!-- Blog Entries Column -->
+      {%block content %}
+      {% endblock %}
+       <!-- Sidebar Widgets Column -->
+      
+    
+
+    </div>
+    <!-- /.row -->
+
+  </div>
+  <!-- /.container -->
+
+  <!-- Footer -->
+  {%block foot %}
+  <footer class="py-5 bg-dark">
+    <div class="container">
+      <p class="m-0 text-center text-white">Copyright &copy; Your Website 2019</p>
+    </div>
+    <!-- /.container -->
+  </footer>
+  {% endblock %}
+  <!-- Bootstrap core JavaScript -->
+  <script src="{% static 'entries/vendor/jquery/jquery.min.js' %}"></script>
+  
+  <script src="{% static 'entries/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+</body>
+
+</html>

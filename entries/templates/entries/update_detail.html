@@ -1,0 +1,48 @@
+{% extends "entries/base.html"%}
+{% load crispy_forms_tags%}
+{%block menu %}
+
+<a class="nav-link" href="{%url 'create_entry'%}">Stworz post</a>
+
+{% endblock %}  
+
+{%block menu2 %}
+<a class="nav-link" href="{%url 'logout'%}">Wyloguj sie</a>
+{% endblock %}  
+
+{%block menu1 %}
+
+<a class="nav-link" href="{%url 'dane-zalogowanego'  %}">Twoje posty</a>
+{% endblock %}  
+{%block menu4 %}
+
+<a class="navbar-brand" href="{%url 'login-home'%}">My Blog</a>
+
+{% endblock %}  
+
+
+{%block content %}
+
+<div class="col-md-8">
+       
+        <!-- Blog Post -->
+        <div class="card mb-4 mt-4">
+          <div class="card-header">
+            Edytuj Post
+            
+          </div>
+          <div class="card-body ">
+            <form method="POST">
+              {% csrf_token %}
+              {{form|crispy}}
+              <button type="submit" value="update" class="btn btn-primary">Edytuj</button>
+            </form>
+              
+          </div>
+        </div>
+        
+        <!-- Pagination -->
+        
+
+      </div>
+ {% endblock %}      

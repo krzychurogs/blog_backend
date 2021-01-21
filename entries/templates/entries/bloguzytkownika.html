@@ -1,0 +1,85 @@
+{% extends "entries/base.html"%}
+{% load i18n %}
+{%block menu %}
+
+<a class="nav-link" href="{%url 'create_entry'%}">Stworz post</a>
+
+{% endblock %}  
+
+{%block menu1 %}
+<a class="nav-link" href="{%url 'logout'%}">Wyloguj sie</a>
+{% endblock %}  
+
+{%block menu2 %}
+
+<a class="nav-link" href="{%url 'dane-zalogowanego'  %}">Twoje posty</a>
+
+{% endblock %}  
+
+{%block menu3 %}
+
+<a class="nav-link" href="{%url 'blogiuzytkownikow'  %}">Blogi użytkowników</a>
+
+{% endblock %}  
+{%block foot %}
+
+
+
+{%endblock %}
+
+{%block content %}
+  <div class="col-md-8" style="width: 100%;">
+        {%for post in posty %}
+        <!-- Blog Post -->
+        <div class="card mb-4 mt-4" style="width: 130%;" >
+          
+             <div class="card-body"  >
+             <img  src="{{ post.image.url }}"  class="eng-Img float-right" style="margin-top:10px;"  width="230" height="190" alt=""> 
+              <p class="card-text">
+             
+             
+              {%for userlikes in post.likes.all %}      
+                {%if forloop.last %}
+                  <button type="text-info" class="btn btn-info ">{{forloop.counter}} Like</button>
+                {% endif %}
+                
+              {% endfor %}  
+              
+              <h3 class="card-title" style="text-size:16;">{{post.entry_title}}</h3>
+              
+              
+            {{post.entry_text|truncatechars:335}}</p>
+            
+            <a href="{% url 'entry-detail' post.pk     %}" class="btn btn-primary btn-sm">Czytaj Więcej &rarr;</a>
+          
+          </div>
+
+
+          <div class="card-footer text-muted">
+            {% language 'pl' %}
+            {{post.entry_date}}
+            {% endlanguage %}
+            <span class= "text-info mr-2">{{post.entry_author}}</span>
+
+          </div>
+          
+        </div>
+        {% endfor %}
+        {% if is_paginated %}
+        <!-- Pagination -->
+        <ul class="pagination justify-content-center mb-4">
+          {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{page_obj.previous_page_number}}">&larr; Poprzednia Strona</a>
+          </li>
+          {%endif%}
+          {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{page_obj.next_page_number}}">Następna Strona &rarr;</a>
+          </li>
+          {%endif%}
+        </ul>
+        {%endif%}
+      </div>
+
+{% endblock %}      

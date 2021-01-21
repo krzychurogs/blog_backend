@@ -1,0 +1,62 @@
+{% extends "entries/base.html"%}
+
+{%block foot %}
+<footer class="py-5 bg-dark" style="position:absolute; width:100%;bottom: 0;">
+    <div class="container">
+      <p class="m-0 text-center text-white">Copyright &copy; Your Website 2019</p>
+    </div>
+    <!-- /.container -->
+  </footer>
+{%endblock %}
+
+
+
+
+{%block content %}
+
+<div class="col-md-8">
+       
+        <!-- Blog Post -->
+ 
+    
+
+<table class="table">
+  <thead class="thead-light">
+    <tr>
+     
+      <th scope="col">Nazwa Uzytkownika</th>
+      <th scope="col">Akcja</th>
+     
+
+
+    </tr>
+  </thead>
+  <tbody>
+  {% for post in posty %}  
+  	
+    <tr>
+      
+      
+ 
+      <td>{{post.entry_author}}</td>
+       <td> <a href="{%url 'blogiuzytkownika' post.entry_author_id   %}" class="btn btn-primary btn-sm">Przejdz na Strone tego uzytkownika &rarr;</a></td>
+       
+      
+  
+      
+    </tr>
+
+    <tr>
+     
+    
+  {% endfor %}  
+  </tbody>
+</table>
+        
+        <!-- Pagination -->
+ 
+
+      </div>
+
+ {% endblock %}      
+ 

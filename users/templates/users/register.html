@@ -1,0 +1,40 @@
+{% extends "entries/base.html"%}
+{% load crispy_forms_tags%}s
+{%block content %}
+
+<div class="col-md-8">
+       
+        <!-- Blog Post -->
+        <div class="card mb-4 mt-4">
+          <div class="card-header">
+            Stworz Konto
+            
+          </div>
+          <div class="card-body ">
+
+            
+            <form method="POST" >
+              {% csrf_token %}
+
+              {{form|crispy}}
+              <button type="submit"class="btn btn-primary" style="margin-top:30px;">Stworz Konto</button>
+            </form>
+             
+          </div>
+        </div>
+        
+        <!-- Pagination -->
+        
+
+      </div>
+ {% endblock %}
+
+{%block foot %}
+<footer class="py-5 bg-dark" style="position:absolute; width:100%;bottom: 0;">
+    <div class="container">
+      <p class="m-0 text-center text-white">Copyright &copy; Your Website 2019</p>
+    </div>
+    <!-- /.container -->
+  </footer>
+{%endblock %}
+      

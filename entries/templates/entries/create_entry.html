@@ -1,0 +1,57 @@
+{% extends "entries/base.html"%}
+{% load crispy_forms_tags%}
+
+{%block menu %}
+
+<a class="nav-link" href="{%url 'create_entry'%}">Stworz post</a>
+
+{% endblock %}  
+
+{%block menu2 %}
+<a class="nav-link" href="{%url 'logout'%}">Wyloguj sie</a>
+{% endblock %}  
+
+{%block menu1 %}
+
+<a class="nav-link" href="{%url 'dane-zalogowanego'  %}">Twoje posty</a>
+{% endblock %}  
+{%block menu4 %}
+
+<a class="navbar-brand" href="{%url 'login-home'%}">My Blog</a>
+
+{% endblock %} 
+{%block foot %}
+
+<footer class="py-5 bg-dark" style="position:absolute; width:100%;bottom: 0;">
+    <div class="container">
+      <p class="m-0 text-center text-white">Copyright &copy; Your Website 2019</p>
+    </div>
+    <!-- /.container -->
+  </footer>
+
+{%endblock %}
+{%block content %}
+
+
+       
+         {% for message in messages %}
+      <div class="alert alert-success" role="alert"> {{ message }}</div>
+    {% endfor %}
+
+<div class="container">
+
+<h1 style="margin-top:10px;">Dodaj Post</h1>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ entry_form|crispy }}
+  
+
+  <button type="submit" class="btn btn-primary" >Dodaj Post</button>
+ 
+</form>        
+        <!-- Pagination -->
+
+</div>
+
+
+{% endblock %}      
