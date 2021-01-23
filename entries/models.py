@@ -17,11 +17,12 @@ class Entries(models.Model):
     entry_title = models.CharField(max_length=50, verbose_name=('tytul'), blank=True)
     entry_text = models.TextField(verbose_name=('tekst'), blank=True)
     entry_date = models.DateTimeField(auto_now_add=True)
-    entry_author = models.ForeignKey(User, on_delete=models.CASCADE)
+    entry_author = models.ForeignKey(User, on_delete=models.CASCADE,blank=True )
     image = models.ImageField(blank=True, null=True, upload_to=upload_path)
     likes = models.ManyToManyField(User, related_name='likes', blank=True)
 
-    def total_likes(self):
+    @property
+    def totalLikes(self):
         return self.likes.count()
 
     class Meta:

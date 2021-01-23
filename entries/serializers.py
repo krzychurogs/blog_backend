@@ -5,4 +5,4 @@ from .models import Entries
 class entriesSerializer(serializers.ModelSerializer):
     class Meta:
         model=Entries
-        fields='__all__'
+        fields=['id','entry_title','entry_author','entry_date','image','entry_text','likes','totalLikes']

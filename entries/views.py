@@ -21,6 +21,7 @@ class listPost(APIView):
 
     def get(self, request):
         entries = Entries.objects.all()
+        totallik=entries.total_likes();
         serializer = entriesSerializer(entries, many=True)
         return Response(serializer.data)
 
@@ -64,6 +65,13 @@ class EntriesViewset(viewsets.ModelViewSet):
         serializer = entriesSerializer(entries, many=True)
         return Response(serializer.data)
 
+    @action(methods=['get'], detail=False, url_name='posts', url_path=r'showuser/(?P<id>\d+)')
+    def post_user_list(self, request, **kwargs):
+        entry_author = kwargs.get('id')
+        entries = Entries.objects.filter(entry_author=entry_author).order_by('-entry_date')
+        serializer = entriesSerializer(entries, many=True)
+        return Response(serializer.data)
+
     @action(methods=['delete'], detail=False, url_name='delete', url_path=r'delete/(?P<id>\d+)')
     def delete_post(self, request, **kwargs):
         post = get_object_or_404(Entries, id=kwargs.get('id'))
@@ -71,22 +79,21 @@ class EntriesViewset(viewsets.ModelViewSet):
         post.delete()
         return Response(data={'message': 'Pomyślnie usunięto'})
 
-    @action(methods=['put'], detail=False, url_name='add',
-            url_path=r'like/(?P<id>\d+)')
+    @action(methods=['patch'], detail=False, url_name='like',url_path=r'like/(?P<id>\d+)/(?P<userid>\d+)')
     def like_add(self, request, **kwargs):
         post = Entries.objects.get(id=kwargs.get('id'))
         self.check_object_permissions(request, post)
-        entry_author = kwargs.get('id')
+        user=kwargs.get('userid');
         is_liked = False
-        if post.likes.filter(id=entry_author).exists():
-            post.likes.remove(entry_author)
+        if post.likes.filter(id=user).exists():
+            post.likes.remove(user)
             is_liked = False
         else:
-            post.likes.add(entry_author)
+            post.likes.add(user)
             is_liked = True
         serializer = entriesSerializer(post, request.data, context={"host": request.get_host()}, partial=True)
         if not serializer.is_valid():
             print(serializer.errors)
             return Response(data=serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
-        serializer.update(post, serializer.validated_data)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
+
