@@ -1,54 +1,59 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404, HttpResponseForbidden
-from django.shortcuts import render
-from django.urls import reverse
-from django.views.generic.edit import FormMixin
+from django.http import JsonResponse
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
+from .models import Message
+from itertools import chain
+from .serializer import MessageSerializer
+from  users.serializers import UserSerializer
 
-from django.views.generic import DetailView, ListView
+from rest_framework.response import Response
+from rest_framework import status
 
-from .forms import ComposeForm
-from .models import Thread, ChatMessage
+class ChatViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+
+    @action(detail=False, methods=['get'], url_name='message_list', url_path='message/(?P<receiver_id>\d+)')
+    def message_list(self, request, **kwargs):
+        messages=list(chain([*Message.objects.filter(sender_id=request.user), *Message.objects.filter(receiver_id=request.user)]))
+        serializer = MessageSerializer(messages, many=True, context={'host': request.get_host()})
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['get'], url_name='message_list', url_path='list/(?P<receiver_id>\d+)')
+    def list_Chat_Users(self, request, **kwargs):
+
+        messages = (Message.objects.filter(sender_id=request.user.id) | Message.objects.filter(
+            receiver_id=kwargs.get('receiver_id'))).order_by('-timestamp').distinct()
+        serializer = MessageSerializer(messages, many=True, context={'host': request.get_host()})
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
 
-class InboxView(LoginRequiredMixin, ListView):
-    template_name = 'chat/inbox.html'
-    def get_queryset(self):
-        return Thread.objects.by_user(self.request.user)
-
-
-class ThreadView(LoginRequiredMixin, FormMixin, DetailView):
-    template_name = 'chat/thread.html'
-    form_class = ComposeForm
-    success_url = './'
-
-    def get_queryset(self):
-        return Thread.objects.by_user(self.request.user)
-
-    def get_object(self):
-        other_username  = self.kwargs.get("username")
-        obj, created    = Thread.objects.get_or_new(self.request.user, other_username)
-        if obj == None:
-            raise Http404
-        return obj
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = self.get_form()
-        return context
-
-    def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return HttpResponseForbidden()
-        self.object = self.get_object()
-        form = self.get_form()
-        if form.is_valid():
-            return self.form_valid(form)
+    @action(detail=False, methods=['post'], url_name='send_message', url_path='message')
+    def send_message(self, request):
+        serializer = MessageSerializer(data=request.data, context={'host': request.get_host()})
+        if serializer.is_valid():
+            serializer.save(receiver=User.objects.get(id=request.data['receiver']), sender=User.objects.get(id=request.data['sender']))
+            return JsonResponse(serializer.data, status=201)
         else:
-            return self.form_invalid(form)
+            print(serializer.errors)
+        return JsonResponse(serializer.errors, status=400)
 
-    def form_valid(self, form):
-        thread = self.get_object()
-        user = self.request.user
-        message = form.cleaned_data.get("message")
-        ChatMessage.objects.create(user=user, thread=thread, message=message)
-        return super().form_valid(form)
+
+    @action(detail=False, methods=['get'], url_name='chat', url_path='chat/(?P<receiver_id>\d+)')
+    def chat(self, request, **kwargs):
+        sender_data = request.user
+        sender = UserSerializer(sender_data, context={'host': request.get_host()}).data
+        receivers_data = User.objects.get(id=kwargs.get('receiver_id'))
+        receiver = UserSerializer(receivers_data, context={'host': request.get_host()}).data
+        messages = (Message.objects.filter(sender=sender_data, receiver=receivers_data) | Message.objects.filter(
+            sender=receivers_data, receiver=sender_data)).order_by('timestamp')
+        messages_data = MessageSerializer(messages, many=True, context={'host': request.get_host()}).data
+        data = {
+            'sender': sender,
+            'receiver': receiver,
+            'messages': messages_data
+        }
+        return Response(data=data)
+

@@ -1,12 +1,14 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
-from .serializers import UserSerializer, GroupSerializer,LoginSerializer
+from .serializers import UserSerializer, GroupSerializer,LoginSerializer,UserProfileSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework.decorators import action
 from django.contrib.auth import login
 from knox.models import AuthToken
 from rest_framework import generics, permissions
@@ -22,6 +24,15 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
 
+    @action(methods=['get'], detail=False, url_name='detail', url_path=r'detail')
+    def userInf(self, request):
+        serializer = UserSerializer(request.user, context={'host': request.get_host()})
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=False, url_name='detail', url_path=r'detailD')
+    def userInfs(self, request):
+        serializer = UserProfileSerializer(request.user, context={'host': request.get_host()})
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 class GroupViewSet(viewsets.ModelViewSet):
     """

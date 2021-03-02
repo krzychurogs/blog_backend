@@ -1,17 +1,29 @@
 from django.contrib.auth.models import User, Group
+from .models import UserProfile
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password']
+        fields = ['id','username', 'email', 'password',]
         extra_kwargs = {'password': {'write_only': True, 'required': True}}
 
 
     def create(self, validate_data):
         user = User.objects.create_user(**validate_data)
-        return user
+        return
+
+
+class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
+    user = UserSerializer(read_only=True)
+    class Meta:
+        model = UserProfile
+        fields = ['user','avatar']
+
+
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):

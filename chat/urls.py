@@ -1,10 +1,11 @@
 from django.urls import path, re_path
+from rest_framework import routers
+from .import views
+from django.urls import path,include
 
+router = routers.DefaultRouter()
 
-from .views import ThreadView, InboxView
-
-app_name = 'chat'
+router.register('message', views.ChatViewSet)
 urlpatterns = [
-    path("", InboxView.as_view()),
-    re_path(r"^messages/(?P<username>[\w.@+-]+)/$", ThreadView.as_view()),
+    path('', include(router.urls)),
 ]

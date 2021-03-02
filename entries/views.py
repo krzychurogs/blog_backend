@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Entries
-from .serializers import entriesSerializer
+from .models import Entries,Comments
+from .serializers import entriesSerializer,commentsSerializer,entriesInputSerializer
 from django.contrib.auth.decorators import login_required
 from rest_framework import viewsets
 from django.http import HttpResponseRedirect
@@ -50,7 +50,7 @@ class EntriesViewset(viewsets.ModelViewSet):
     def create_post(self, request):
         request.data.pop('image')
         image = request.FILES.get('image', None)
-        serializer = entriesSerializer(data=request.data, partial=True)
+        serializer = entriesInputSerializer(data=request.data, partial=True)
         if not serializer.is_valid():
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         obj = serializer.save()
@@ -58,17 +58,40 @@ class EntriesViewset(viewsets.ModelViewSet):
         obj.save()
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(methods=['get'], detail=False, url_name='posts', url_path=r'showuser/(?P<id>\d+)')
-    def post_user_list(self, request, **kwargs):
-        entry_author = kwargs.get('id')
-        entries = Entries.objects.filter(entry_author=entry_author).order_by('-entry_date')
-        serializer = entriesSerializer(entries, many=True)
+    @action(methods=['post'], detail=False, url_name='createcomment', url_path=r'createcomment')
+    def create_comment(self, request):
+        serializer = commentsSerializer(data=request.data, partial=True)
+        if not serializer.is_valid():
+            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        obj = serializer.save()
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(methods=['get'], detail=False, url_name='comments', url_path=r'showcomment/(?P<id>\d+)')
+    def comment_list(self, request, **kwargs):
+        postid = kwargs.get('id')
+        comments = Comments.objects.filter(post=postid)
+        serializer = commentsSerializer(comments, many=True, context={'request': request})
         return Response(serializer.data)
 
     @action(methods=['get'], detail=False, url_name='posts', url_path=r'showuser/(?P<id>\d+)')
     def post_user_list(self, request, **kwargs):
         entry_author = kwargs.get('id')
         entries = Entries.objects.filter(entry_author=entry_author).order_by('-entry_date')
+        serializer = entriesSerializer(entries, many=True,context={'request':request})
+        return Response(serializer.data)
+
+    @action(methods=['get'], detail=False, url_name='posts', url_path=r'showdetail/(?P<id>\d+)')
+    def post_user_detail(self, request, **kwargs):
+        id = kwargs.get('id')
+        entries = Entries.objects.filter(id=id).order_by('-entry_date')
+        serializer = entriesSerializer(entries, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
+
+    @action(methods=['get'], detail=False, url_name='userposts', url_path=r'allblog')
+    def all_blog_list(self, request, **kwargs):
+        entries = Entries.objects.raw('SELECT * FROM entries_Entries group by entry_author_id ;')
         serializer = entriesSerializer(entries, many=True)
         return Response(serializer.data)
 
@@ -78,6 +101,7 @@ class EntriesViewset(viewsets.ModelViewSet):
         self.check_object_permissions(request, post)
         post.delete()
         return Response(data={'message': 'Pomyślnie usunięto'})
+
 
     @action(methods=['patch'], detail=False, url_name='like',url_path=r'like/(?P<id>\d+)/(?P<userid>\d+)')
     def like_add(self, request, **kwargs):
